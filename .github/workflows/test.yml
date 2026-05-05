@@ -33,7 +33,6 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       GCLOUD_PROJECT: ${{ secrets.GCLOUD_PROJECT }}
       GCLOUD_BUCKET: ${{ secrets.GCLOUD_BUCKET }}
-      JRUBY_OPTS: --debug
     steps:
     - uses: actions/checkout@v6
     - name: Set up Ruby
