@@ -9,7 +9,7 @@ All notable changes to this project are documented here. The format is based on 
 - Ruby 3.3 to the CI matrix.
 - A CI cell pairing Ruby 3.3 with `gemfiles/carrierwave-1.gemfile` so CarrierWave 1.x is exercised on a current Ruby. Ruby 2.7 + CarrierWave 1.x is also covered.
 - A CI cell pairing Ruby 3.3 with `gemfiles/carrierwave-master.gemfile`.
-- Gemspec metadata: `homepage_uri`, `source_code_uri`, `changelog_uri`, `bug_tracker_uri` — surfaces links on rubygems.org.
+- Gemspec metadata: `source_code_uri`, `changelog_uri`, `bug_tracker_uri` — surfaces links on rubygems.org.
 
 ### Changed
 - **BREAKING**: `required_ruby_version` is now `>= 2.7`. Ruby 2.6 and earlier are no longer supported.
@@ -22,6 +22,7 @@ All notable changes to this project are documented here. The format is based on 
 
 ### Removed
 - **BREAKING**: Ruby 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 dropped from the CI matrix. The gemspec now refuses to install on those versions.
+- Ruby 3.0 and JRuby cells dropped from the CI matrix. The gemspec floor stays at `>= 2.7` (install still works on 3.0), but these combinations are no longer validated on every push.
 - The dead `if RUBY_VERSION >= '2.2.2'` activemodel branch in the gemspec; the floor is now `activemodel >= 3.2.0` unconditionally.
 
 ## [1.0.0] and earlier
