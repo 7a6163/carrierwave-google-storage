@@ -14,6 +14,8 @@ module CarrierWave
       add_config :gcloud_credentials
       add_config :gcloud_authenticated_url_expiration
       add_config :gcloud_content_disposition
+      add_config :gcloud_hmac_access_id
+      add_config :gcloud_hmac_secret
 
       configure do |config|
         config.storage_engines[:gcloud] = 'CarrierWave::Storage::Gcloud'

@@ -73,5 +73,83 @@ describe CarrierWave::Storage::GcloudFile do
 
       gcloud_file.authenticated_url
     end
+
+    context 'when HMAC credentials are configured' do
+      before do
+        allow(uploader).to receive(:gcloud_hmac_access_id).and_return('GOOG1EXAMPLE')
+        allow(uploader).to receive(:gcloud_hmac_secret).and_return('hmac-secret')
+      end
+
+      it 'forwards issuer and signing_key to #signed_url' do
+        expect(bucket).to receive(:signed_url).with(
+          path,
+          { issuer: 'GOOG1EXAMPLE', signing_key: 'hmac-secret', expires: 60 }
+        )
+
+        gcloud_file.authenticated_url
+      end
+
+      it 'lets per-call options override the configured HMAC values' do
+        expect(bucket).to receive(:signed_url).with(
+          path,
+          { issuer: 'GOOG1OVERRIDE', signing_key: 'override-secret', expires: 60 }
+        )
+
+        gcloud_file.authenticated_url(
+          issuer: 'GOOG1OVERRIDE',
+          signing_key: 'override-secret'
+        )
+      end
+    end
+
+    context 'when HMAC credentials are not configured' do
+      before do
+        allow(uploader).to receive(:gcloud_hmac_access_id).and_return(nil)
+        allow(uploader).to receive(:gcloud_hmac_secret).and_return(nil)
+      end
+
+      it 'does not pass issuer or signing_key to #signed_url' do
+        expect(bucket).to receive(:signed_url).with(path, {expires: 60})
+
+        gcloud_file.authenticated_url
+      end
+    end
+
+    context 'when only gcloud_hmac_access_id is set' do
+      before do
+        allow(uploader).to receive(:gcloud_hmac_access_id).and_return('GOOG1ONLY_ID')
+        allow(uploader).to receive(:gcloud_hmac_secret).and_return(nil)
+      end
+
+      it 'raises ArgumentError to surface the misconfiguration' do
+        expect { gcloud_file.authenticated_url }
+          .to raise_error(ArgumentError, /gcloud_hmac_access_id and gcloud_hmac_secret must both be set/)
+      end
+    end
+
+    context 'when only gcloud_hmac_secret is set' do
+      before do
+        allow(uploader).to receive(:gcloud_hmac_access_id).and_return(nil)
+        allow(uploader).to receive(:gcloud_hmac_secret).and_return('only-secret')
+      end
+
+      it 'raises ArgumentError to surface the misconfiguration' do
+        expect { gcloud_file.authenticated_url }
+          .to raise_error(ArgumentError, /gcloud_hmac_access_id and gcloud_hmac_secret must both be set/)
+      end
+    end
+
+    context 'when HMAC credentials are empty strings' do
+      before do
+        allow(uploader).to receive(:gcloud_hmac_access_id).and_return('')
+        allow(uploader).to receive(:gcloud_hmac_secret).and_return('')
+      end
+
+      it 'treats them as unset and does not pass issuer or signing_key' do
+        expect(bucket).to receive(:signed_url).with(path, {expires: 60})
+
+        gcloud_file.authenticated_url
+      end
+    end
   end
 end
