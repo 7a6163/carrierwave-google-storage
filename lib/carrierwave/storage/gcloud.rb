@@ -36,15 +36,15 @@ module CarrierWave
       end
 
       def clean_cache!(_seconds)
-        raise 'use Object Lifecycle Management to clean the cache'
+        raise "use Object Lifecycle Management to clean the cache"
       end
 
       def connection
         @connection ||= begin
           conn_cache = self.class.connection_cache
           conn_cache[credentials] ||= ::Google::Cloud::Storage.new(
-            project_id: credentials[:gcloud_project] || ENV['GCLOUD_PROJECT'],
-            credentials: credentials[:gcloud_keyfile] || ENV['GCLOUD_KEYFILE']
+            project_id: credentials[:gcloud_project] || ENV["GCLOUD_PROJECT"],
+            credentials: credentials[:gcloud_keyfile] || ENV["GCLOUD_KEYFILE"]
           )
         end
       end

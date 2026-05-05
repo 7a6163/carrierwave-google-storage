@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/module/delegation'
+require "active_support/core_ext/module/delegation"
 
 module CarrierWave
   module Storage
     class GcloudFile
-      GCLOUD_STORAGE_URL = 'https://storage.googleapis.com'
+      GCLOUD_STORAGE_URL = "https://storage.googleapis.com"
 
       attr_writer :file
       attr_accessor :uploader, :connection, :path, :file_exists
@@ -13,14 +13,15 @@ module CarrierWave
       delegate :content_disposition, :content_type, :size, to: :file, allow_nil: true
 
       def initialize(uploader, connection, path)
-        @uploader   = uploader
+        @uploader = uploader
         @connection = connection
-        @path       = path
+        @path = path
       end
 
       def file
         @file ||= bucket.file(path)
       end
+
       alias to_file file
 
       def attributes
@@ -44,7 +45,7 @@ module CarrierWave
       end
 
       def extension
-        elements = path.split('.')
+        elements = path.split(".")
         elements.last if elements.size > 1
       end
 
@@ -56,7 +57,7 @@ module CarrierWave
         tmp_file = Tempfile.new(
           CarrierWave::Support::UriFilename.filename(file.name)
         )
-        (file.download tmp_file.path, verify: :all).read
+        (file.download(tmp_file.path, verify: :all)).read
       end
 
       def store(new_file)
@@ -66,18 +67,19 @@ module CarrierWave
           @file = bucket.create_file(
             new_file.path,
             path,
-            acl: uploader.gcloud_bucket_is_public ? 'publicRead' : nil,
+            acl: uploader.gcloud_bucket_is_public ? "publicRead" : nil,
             content_type: new_file.content_type,
             content_disposition: uploader.gcloud_content_disposition
           )
         end
+
         self
       end
 
       def copy_to(new_path)
         file.copy(
           new_path,
-          acl: uploader.gcloud_bucket_is_public ? 'publicRead' : nil
+          acl: uploader.gcloud_bucket_is_public ? "publicRead" : nil
         )
       end
 
@@ -87,20 +89,25 @@ module CarrierWave
 
       def authenticated_url(options = {})
         if uploader.gcloud_authenticated_url_expiration
-          options = { expires: uploader.gcloud_authenticated_url_expiration }.merge(options)
+          options = {expires: uploader.gcloud_authenticated_url_expiration}.merge(options)
         end
+
         hmac_access_id = uploader.gcloud_hmac_access_id.to_s
-        hmac_secret    = uploader.gcloud_hmac_secret.to_s
+        hmac_secret = uploader.gcloud_hmac_secret.to_s
         if !hmac_access_id.empty? || !hmac_secret.empty?
           if hmac_access_id.empty? || hmac_secret.empty?
-            raise ArgumentError,
-                  'gcloud_hmac_access_id and gcloud_hmac_secret must both be set'
+            raise(
+              ArgumentError,
+              "gcloud_hmac_access_id and gcloud_hmac_secret must both be set"
+            )
           end
+
           options = {
             issuer: hmac_access_id,
             signing_key: hmac_secret
           }.merge(options)
         end
+
         bucket.signed_url(path, **options)
       end
 
