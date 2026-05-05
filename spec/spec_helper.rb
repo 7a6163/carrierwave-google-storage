@@ -31,6 +31,12 @@ RSpec.configure do |config|
 
   Kernel.srand config.seed
 
+  config.before(:each, type: :feature) do
+    if ENV['GCLOUD_PROJECT'].to_s.empty? || ENV['GCLOUD_BUCKET'].to_s.empty?
+      skip 'Feature specs require GCLOUD_PROJECT and GCLOUD_BUCKET (real GCS credentials).'
+    end
+  end
+
   config.before(:all, type: :feature) do
     CarrierWave.configure do |config|
       config.cache_storage                       = :gcloud
