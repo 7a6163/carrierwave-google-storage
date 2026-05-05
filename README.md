@@ -53,6 +53,30 @@ class FileUploader < CarrierWave::Uploader::Base
 end
 ```
 
+## Signing URLs with HMAC keys
+
+By default, signed URLs are signed with the service account's RSA private key (the `gcloud_credentials` keyfile). If you want to decouple URL signing from the service account — for example, so you can rotate the URL signer without rotating the upload credential — you can configure an [HMAC key](https://cloud.google.com/storage/docs/authentication/hmackeys) instead:
+
+```ruby
+CarrierWave.configure do |config|
+  config.storage                 = :gcloud
+  config.gcloud_bucket           = 'your-bucket-name'
+  config.gcloud_bucket_is_public = false   # HMAC only matters for private/signed URLs
+
+  # gcloud_credentials is still required — HMAC only signs URLs;
+  # the GCS API itself authenticates with the service account.
+  config.gcloud_credentials = {
+    gcloud_project: 'gcp-project-name',
+    gcloud_keyfile: 'path-to-gcp-keyfile.json'
+  }
+
+  config.gcloud_hmac_access_id = ENV['GCS_HMAC_ACCESS_ID']  # 'GOOG1...'
+  config.gcloud_hmac_secret    = ENV['GCS_HMAC_SECRET']
+end
+```
+
+When both `gcloud_hmac_access_id` and `gcloud_hmac_secret` are set, `uploader.url` produces a V4 signed URL signed with the HMAC key. If neither is set, the gem signs with the service account credentials. Setting only one of the pair raises `ArgumentError` to surface the misconfiguration. Per-call options passed to `uploader.url(...)` always override the configured HMAC values.
+
 ## How to get the Keyfile?
 
 To generate a new keyfile, perform the following steps: 

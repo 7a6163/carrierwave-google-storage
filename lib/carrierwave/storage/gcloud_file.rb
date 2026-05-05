@@ -89,6 +89,18 @@ module CarrierWave
         if uploader.gcloud_authenticated_url_expiration
           options = { expires: uploader.gcloud_authenticated_url_expiration }.merge(options)
         end
+        hmac_access_id = uploader.gcloud_hmac_access_id.to_s
+        hmac_secret    = uploader.gcloud_hmac_secret.to_s
+        if !hmac_access_id.empty? || !hmac_secret.empty?
+          if hmac_access_id.empty? || hmac_secret.empty?
+            raise ArgumentError,
+                  'gcloud_hmac_access_id and gcloud_hmac_secret must both be set'
+          end
+          options = {
+            issuer: hmac_access_id,
+            signing_key: hmac_secret
+          }.merge(options)
+        end
         bucket.signed_url(path, **options)
       end
 

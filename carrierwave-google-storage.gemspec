@@ -15,19 +15,22 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/metaware/carrierwave-google-storage'
   spec.license       = 'MIT'
 
+  spec.metadata = {
+    'source_code_uri' => spec.homepage,
+    'changelog_uri'   => "#{spec.homepage}/blob/master/CHANGELOG.md",
+    'bug_tracker_uri' => "#{spec.homepage}/issues"
+  }
+
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'carrierwave', ['>= 1.3.2', '< 4']
-  spec.add_dependency 'google-cloud-storage', '~> 1.18'
+  spec.required_ruby_version = '>= 2.7'
 
-  if RUBY_VERSION >= '2.2.2'
-    spec.add_dependency 'activemodel', '>= 3.2.0'
-  else
-    spec.add_dependency 'activemodel', '~> 4.2.7'
-  end
+  spec.add_dependency 'carrierwave', ['>= 1.3.2', '< 4']
+  spec.add_dependency 'google-cloud-storage', '~> 1.44'
+  spec.add_dependency 'activemodel', '>= 3.2.0'
 
   spec.add_development_dependency 'bundler', '>= 1.12'
   spec.add_development_dependency 'pry', '>= 0.10.3'
