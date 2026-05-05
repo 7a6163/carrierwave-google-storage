@@ -1,9 +1,9 @@
-require 'google/cloud/storage'
-require 'carrierwave'
-require 'carrierwave/google/storage/version'
-require 'carrierwave/storage/gcloud'
-require 'carrierwave/storage/gcloud_file'
-require 'carrierwave/support/uri_filename'
+require "google/cloud/storage"
+require "carrierwave"
+require "carrierwave/google/storage/version"
+require "carrierwave/storage/gcloud"
+require "carrierwave/storage/gcloud_file"
+require "carrierwave/support/uri_filename"
 
 module CarrierWave
   module Uploader
@@ -18,7 +18,7 @@ module CarrierWave
       add_config :gcloud_hmac_secret
 
       configure do |config|
-        config.storage_engines[:gcloud] = 'CarrierWave::Storage::Gcloud'
+        config.storage_engines[:gcloud] = "CarrierWave::Storage::Gcloud"
       end
     end
   end
